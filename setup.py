@@ -29,7 +29,7 @@ AUTHOR = "minkedong"
 
 AUTHOR_EMAIL = "minkedong89@126.com"
 
-URL = "https://git.oschina.net/minkedong/wxpay_sdk"
+URL = "https://github.com/minkedong/wxpay_sdk"
 
 VERSION = "0.0.3"
 
