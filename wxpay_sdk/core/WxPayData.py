@@ -939,3 +939,180 @@ class WxPayOrderApp(WxPayDataBase):
         @param string value 
         """
         self._values[key] = value
+
+
+
+
+
+class WxPayJsApiPay(WxPayDataBase):
+    """
+    /**
+     * 
+     * 提交JSAPI输入对象
+     * @author minkedong
+     *
+     */
+    """
+    
+    def SetAppid(self, value):
+        """
+        /**
+        * 设置微信分配的公众账号ID
+        * @param string value 
+        **/
+        """
+        self._values['appId'] = value
+    
+    def GetAppid(self):
+        """
+        /**
+        * 获取微信分配的公众账号ID的值
+        * @return 值
+        **/
+        """
+        return self._values.get('appId')
+    
+    def IsAppidSet(self):
+        """
+        /**
+        * 判断微信分配的公众账号ID是否存在
+        * @return true 或 false
+        **/
+        """
+        return self._values.has_key('appId')
+
+    def SetTimeStamp(self, value):
+        """
+        /**
+        * 设置支付时间戳
+        * @param string value 
+        **/
+        """
+        self._values['timeStamp'] = value
+    
+    def GetTimeStamp(self):
+        """
+        /**
+        * 获取支付时间戳的值
+        * @return 值
+        **/
+        """
+        return self._values.get('timeStamp')
+    
+    def IsTimeStampSet(self):
+        """
+        /**
+        * 判断支付时间戳是否存在
+        * @return true 或 false
+        **/
+        """
+        return self._values.has_key('timeStamp')
+    
+    
+    def SetNonceStr(self, value):
+        """
+        /**
+        * 随机字符串
+        * @param string value 
+        **/
+        """
+        self._values['nonceStr'] = value
+
+    def GetReturn_code(self):
+        """
+        /**
+        * 获取notify随机字符串值
+        * @return 值
+        **/
+        """
+        return self._values.get('nonceStr')
+    
+    def IsReturn_codeSet(self):
+        """
+        /**
+        * 判断随机字符串是否存在
+        * @return true 或 false
+        **/
+        """
+        return self._values.has_key('nonceStr')
+
+    def SetPackage(self, value):
+        """
+        /**
+        * 设置订单详情扩展字符串
+        * @param string value 
+        **/
+        """
+        self._values['package'] = value
+    
+    def GetPackage(self):
+        """
+        /**
+        * 获取订单详情扩展字符串的值
+        * @return 值
+        **/
+        """
+        return self._values.get('package')
+    
+    def IsPackageSet(self):
+        """
+        /**
+        * 判断订单详情扩展字符串是否存在
+        * @return true 或 false
+        **/
+        """
+        return self._values.has_key('package')
+    
+    def SetSignType(self, value):
+        """
+        /**
+        * 设置签名方式
+        * @param string value 
+        **/
+        """
+        self._values['signType'] = value
+    
+    def GetSignType(self):
+        """
+        /**
+        * 获取签名方式
+        * @return 值
+        **/
+        """
+        return self._values.get('signType')
+    
+    def IsSignTypeSet(self):
+        """
+        /**
+        * 判断签名方式是否存在
+        * @return true 或 false
+        **/
+        """
+        return self._values.has_key('signType')
+    
+    def SetPaySign(self, value):
+        """
+        /**
+        * 设置签名方式
+        * @param string value 
+        **/
+        """
+        self._values['paySign'] = value
+    
+    def GetPaySign(self):
+        """
+        /**
+        * 获取签名方式
+        * @return 值
+        **/
+        """
+        return self._values.get('paySign')
+    
+    def IsPaySignSet(self):
+        """
+        /**
+        * 判断签名方式是否存在
+        * @return true 或 false
+        **/
+        """
+        return self._values.has_key('paySign')

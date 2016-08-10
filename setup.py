@@ -31,14 +31,14 @@ AUTHOR_EMAIL = "minkedong89@126.com"
 
 URL = "https://github.com/minkedong/wxpay_sdk"
 
-VERSION = "0.0.3"
+VERSION = "0.0.4"
 
 LICENSE = "Free"
 
 LONG_DESCRIPTION = """
 wxpay_sdk
 
-微信支付（暂时实现了扫码支付、app支付、回调辅助函数）
+微信支付（暂时实现了扫码支付、app支付、h5支付、回调辅助函数）
 
 由于工作中暂时只用到了这些，按照微信支付官方SDK的PHP版本，实现了python版本，后面如果有时间会继续实现其他类型支付，
 有用到微信支付的童鞋，可以方便的使用之！！！
@@ -71,13 +71,13 @@ params = {
 
 wechatpay_qrcode_config = {
 
-    'wechatpay_appid': 'wx26f047e3c34a3983',  # 必填,微信分配的公众账号ID
+    'wechatpay_appid': 'xxxxxxxxxxx',  # 必填,微信分配的公众账号ID
     
-    'wechatpay_key': '0E5F25355D845D48751D9581586BD3B7',  # 必填,appid 密钥
+    'wechatpay_key': 'xxxxxxxxxxx',  # 必填,appid 密钥
     
-    'wechatpay_mchid': '1266915501',  # 必填,微信支付分配的商户号
+    'wechatpay_mchid': 'xxxxxxxxxxx',  # 必填,微信支付分配的商户号
     
-    'wechatpay_appsecret': 'b71c0ab291e895f5f37172f4c7eb8ece',
+    'wechatpay_appsecret': 'xxxxxxxxxxx',
     
 }
 
@@ -112,13 +112,13 @@ params = {
 
 wechatpay_qrcode_config = {
 
-    'wechatpay_appid': 'wx6db274a7ba941254',  # 必填,微信分配的公众账号ID
+    'wechatpay_appid': 'xxxxxxxxxxx',  # 必填,微信分配的公众账号ID
     
-    'wechatpay_key': '45151BB392D80732D0BFF09EFFFA907D',  # 必填,appid 密钥
+    'wechatpay_key': 'xxxxxxxxxxx',  # 必填,appid 密钥
     
-    'wechatpay_mchid': '1267906201',  # 必填,微信支付分配的商户号
+    'wechatpay_mchid': 'xxxxxxxxxxx',  # 必填,微信支付分配的商户号
     
-    'wechatpay_appsecret': '4706d1cf5865d513d7a4a601d0c36539',
+    'wechatpay_appsecret': 'xxxxxxxxxxx',
     
 }
 
@@ -131,9 +131,51 @@ app_result = wxpay.unifiedorder_get_app_url(**params)
 
 
 
+####################################
+# 3．微信公众号h5支付 #
+####################################
+
+params = {
+
+    'openid':'',
+
+    'body': u'Ipad mini  16G  白色', # 商品或支付单简要描述,例如：Ipad mini  16G  白色
+
+    'out_trade_no': '940123123sdaf956', # 商户系统内部的订单号,32个字符内、可包含字母
+
+    'total_fee': 1, # 订单总金额，单位为分
+
+    'product_id': '2116', # 商品ID
+
+    'notify_url': 'http://145657w88r.iok.la/weixin/pay_callback/',
+
+    'trade_type':'JSAPI',
+
+}
+
+wechatpay_qrcode_config = {
+
+    'wechatpay_appid': 'xxxxxxxxxxx',  # 必填,微信分配的公众账号ID
+
+    'wechatpay_key': 'xxxxxxxxxxx',
+
+    'wechatpay_mchid': 'xxxxxxxxxxx',  # 必填,微信支付分配的商户号
+
+    'wechatpay_appsecret': 'xxxxxxxxxxx', # 必填,appid 密钥
+
+}
+
+wxpay = WxPayBasic(conf=wechatpay_qrcode_config)
+
+app_result = wxpay.get_js_api_parameters(**params)
+
+后续处理把app_result传递给微信js客户端，由客户端sdk使用此参数发起请求即可
+..........
+
+
 
 ####################################
-# ３支付回调定义 （注意：扫码支付&&app支付，使用的是不同config）#
+# 4支付回调定义 （注意：扫码支付&&app支付，使用的是不同config）#
 # (以django的views为例)
 ####################################
 
@@ -146,16 +188,16 @@ def wechat_pay_callback(request, *args, **kwargs):
     # 回调处理：签名验证，订单查询验证
     # 返回验证结果（可作为直接返回给微信的xml）
     wechatpay_qrcode_config = {
-        'wechatpay_appid': 'wx26f047e3c34a3983',  # 必填,微信分配的公众账号ID
-        'wechatpay_key': '0E5F25355D845D48751D9581586BD3B7',  # 必填,appid 密钥
-        'wechatpay_mchid': '1266915501',  # 必填,微信支付分配的商户号
-        'wechatpay_appsecret': 'b71c0ab291e895f5f37172f4c7eb8ece',
+        'wechatpay_appid': 'xxxxxxxxxxx',  # 必填,微信分配的公众账号ID
+        'wechatpay_key': 'xxxxxxxxxxx',  # 必填,appid 密钥
+        'wechatpay_mchid': 'xxxxxxxxxxx',  # 必填,微信支付分配的商户号
+        'wechatpay_appsecret': 'xxxxxxxxxxx',
     }
     # wechatpay_qrcode_config = {
-    #     'wechatpay_appid': 'wx6db274a7ba941254',  # 必填,微信分配的公众账号ID
-    #     'wechatpay_key': '45151BB392D80732D0BFF09EFFFA907D',  # 必填,appid 密钥
-    #     'wechatpay_mchid': '1267906201',  # 必填,微信支付分配的商户号
-    #     'wechatpay_appsecret': '4706d1cf5865d513d7a4a601d0c36539',
+    #     'wechatpay_appid': 'xxxxxxxxxxx',  # 必填,微信分配的公众账号ID
+    #     'wechatpay_key': 'xxxxxxxxxxx',  # 必填,appid 密钥
+    #     'wechatpay_mchid': 'xxxxxxxxxxx',  # 必填,微信支付分配的商户号
+    #     'wechatpay_appsecret': 'xxxxxxxxxxx',
     # }
     wxpay = WxPayBasic(conf=wechatpay_qrcode_config)
     res_xml_str = wxpay.wxpay_callback(req_xml_str)

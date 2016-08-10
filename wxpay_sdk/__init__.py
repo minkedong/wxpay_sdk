@@ -4,6 +4,7 @@ from wxpay_sdk.core.WxPayConfig import WxPayConfig
 from wxpay_sdk.core.WxPayData import WxPayUnifiedOrder, WxPayOrderApp
 from wxpay_sdk.WxPayNativePay import NativePay
 from wxpay_sdk.WxPayAppPay import AppPay
+from wxpay_sdk.WxPayJsApiPay import JsApiPay
 from wxpay_sdk.core.WxPayException import WxPayException
 from wxpay_sdk.notify import PayNotifyCallBack
 
@@ -28,7 +29,7 @@ class WxPayBasic(object):
 
 
     def _unifiedorder_get_result(self, out_trade_no, body, total_fee, notify_url, trade_type, product_id, attach='',\
-            time_start='', time_expire='', goods_tag=''):
+            time_start='', time_expire='', goods_tag='', openid=''):
         """
         统一下单基础函数
         """
@@ -47,11 +48,15 @@ class WxPayBasic(object):
             wxpayunifiedorder.SetTime_start(time_start)
         if time_expire:
             wxpayunifiedorder.SetTime_expire(time_expire)
+        if openid:
+            wxpayunifiedorder.SetOpenid(openid)
 
         if trade_type == 'NATIVE':
             nativepay = NativePay()
         elif trade_type == 'APP':
             nativepay = AppPay()
+        elif trade_type == 'JSAPI':
+            nativepay = JsApiPay()
         else:
             raise WxPayException(u'暂未实现此支付类型')
 
@@ -112,6 +117,18 @@ class WxPayBasic(object):
         return res_xml
 
 
+    def get_js_api_parameters(self, out_trade_no, body, total_fee, notify_url, trade_type, product_id, attach='',\
+            time_start='', time_expire='', goods_tag='', openid=''):
+        """
+        微信公众号内h5页面支付,获取支付参数供jsSDK端调用支付
+        """
+        result = self._unifiedorder_get_result(out_trade_no, body, total_fee, notify_url, trade_type, product_id, attach,\
+            time_start, time_expire, goods_tag, openid)
+
+        jsapipay = JsApiPay()
+        return jsapipay.GetJsApiParameters(result)
+
+
 
 
 if __name__ == '__main__':
@@ -128,10 +145,10 @@ if __name__ == '__main__':
     }
 
     wechatpay_qrcode_config = {
-        'wechatpay_appid': 'xxxxxxxxx',  # 必填,微信分配的公众账号ID
-        'wechatpay_key': 'xxxxxxxxxxx',  # 必填,appid 密钥
-        'wechatpay_mchid': 'xxxxxxxxx',  # 必填,微信支付分配的商户号
-        'wechatpay_appsecret': 'xxxxxxxxxxxxx',
+        'wechatpay_appid': 'xxxxxxxxxxx',  # 必填,微信分配的公众账号ID
+        'wechatpay_key': 'xxxxxxxxxxx',  
+        'wechatpay_mchid': 'xxxxxxxxxxx',  # 必填,微信支付分配的商户号
+        'wechatpay_appsecret': 'xxxxxxxxxxx', # 必填,appid 密钥
     }
     wxpay = WxPayBasic(conf=wechatpay_qrcode_config)
     code_url = wxpay.unifiedorder2_get_code_url(**params)
@@ -154,10 +171,10 @@ if __name__ == '__main__':
     }
 
     wechatpay_qrcode_config = {
-        'wechatpay_appid': 'xxxxxxxxx',  # 必填,微信分配的公众账号ID
-        'wechatpay_key': 'xxxxxxxxx',  # 必填,appid 密钥
-        'wechatpay_mchid': 'xxxxxxxxx',  # 必填,微信支付分配的商户号
-        'wechatpay_appsecret': 'xxxxxxxxx',
+        'wechatpay_appid': 'xxxxxxxxxxx',  # 必填,微信分配的公众账号ID
+        'wechatpay_key': 'xxxxxxxxxxx',  
+        'wechatpay_mchid': 'xxxxxxxxxxx',  # 必填,微信支付分配的商户号
+        'wechatpay_appsecret': 'xxxxxxxxxxx', # 必填,appid 密钥
     }
     wxpay = WxPayBasic(conf=wechatpay_qrcode_config)
     app_result = wxpay.unifiedorder_get_app_url(**params)
@@ -166,10 +183,35 @@ if __name__ == '__main__':
     # ..........
 
 
+    ####################################
+    # 3．微信公众号h5支付 #
+    ####################################
+    params = {
+        'openid':'',
+        'body': u'Ipad mini  16G  白色', # 商品或支付单简要描述,例如：Ipad mini  16G  白色
+        'out_trade_no': '940123123sdaf956', # 商户系统内部的订单号,32个字符内、可包含字母
+        'total_fee': 1, # 订单总金额，单位为分
+        'product_id': '2116', # 商品ID
+        'notify_url': 'http://145657w88r.iok.la/weixin/pay_callback/',
+        'trade_type':'JSAPI',
+    }
+
+    wechatpay_qrcode_config = {
+        'wechatpay_appid': 'xxxxxxxxxxx',  # 必填,微信分配的公众账号ID
+        'wechatpay_key': 'xxxxxxxxxxx',
+        'wechatpay_mchid': 'xxxxxxxxxxx',  # 必填,微信支付分配的商户号
+        'wechatpay_appsecret': 'xxxxxxxxxxx', # 必填,appid 密钥
+    }
+    wxpay = WxPayBasic(conf=wechatpay_qrcode_config)
+    app_result = wxpay.get_js_api_parameters(**params)
+
+    # 后续处理把app_result传递给微信js客户端，由客户端sdk使用此参数发起请求即可
+    # ..........
+
 
 
     ####################################
-    # ３支付回调定义 （注意：扫码支付&&app支付，使用的是不同config）#
+    # 4支付回调定义 （注意：扫码支付&&app支付，使用的是不同config）#
     # (以django的views为例)
     ####################################
     # @csrf_exempt
@@ -179,16 +221,16 @@ if __name__ == '__main__':
     #     # 回调处理：签名验证，订单查询验证
     #     # 返回验证结果（可作为直接返回给微信的xml）
     #     wechatpay_qrcode_config = {
-    #         'wechatpay_appid': 'xxxxxxxxx',  # 必填,微信分配的公众账号ID
-    #         'wechatpay_key': 'xxxxxxxxx',  # 必填,appid 密钥
-    #         'wechatpay_mchid': 'xxxxxxxxx',  # 必填,微信支付分配的商户号
-    #         'wechatpay_appsecret': 'xxxxxxxxx',
+    #         'wechatpay_appid': 'xxxxxxxxxxx',  # 必填,微信分配的公众账号ID
+    #         'wechatpay_key': 'xxxxxxxxxxx',  # 必填,appid 密钥
+    #         'wechatpay_mchid': 'xxxxxxxxxxx',  # 必填,微信支付分配的商户号
+    #         'wechatpay_appsecret': 'xxxxxxxxxxx',
     #     }
     #     # wechatpay_qrcode_config = {
-    #     #     'wechatpay_appid': 'xxxxxxxxx',  # 必填,微信分配的公众账号ID
-    #     #     'wechatpay_key': 'xxxxxxxxx',  # 必填,appid 密钥
-    #     #     'wechatpay_mchid': 'xxxxxxxxx',  # 必填,微信支付分配的商户号
-    #     #     'wechatpay_appsecret': 'xxxxxxxxx',
+    #     #     'wechatpay_appid': 'xxxxxxxxxxx',  # 必填,微信分配的公众账号ID
+    #     #     'wechatpay_key': 'xxxxxxxxxxx',  # 必填,appid 密钥
+    #     #     'wechatpay_mchid': 'xxxxxxxxxxx',  # 必填,微信支付分配的商户号
+    #     #     'wechatpay_appsecret': 'xxxxxxxxxxx',
     #     # }
     #     wxpay = WxPayBasic(conf=wechatpay_qrcode_config)
     #     res_xml_str = wxpay.wxpay_callback(req_xml_str)

@@ -1,6 +1,6 @@
 ***wxpay_sdk***
 
-微信支付（暂时实现了扫码支付、app支付、回调辅助函数）
+微信支付（暂时实现了扫码支付、app支付、h5支付、回调辅助函数）
 
 由于工作中暂时只用到了这些，按照微信支付官方SDK的PHP版本，实现了python版本，后面如果有时间会继续实现其他类型支付，
 有用到微信支付的童鞋，可以方便的使用之！！！
@@ -89,8 +89,49 @@ pip install wxpay_sdk
 
 
 
+# 3．微信公众号h5支付 #
 
-# ３支付回调定义 （注意：扫码支付&&app支付，使用的是不同config）#
+params = {
+
+    'openid':'',
+
+    'body': u'Ipad mini  16G  白色', # 商品或支付单简要描述,例如：Ipad mini  16G  白色
+
+    'out_trade_no': '940123123sdaf956', # 商户系统内部的订单号,32个字符内、可包含字母
+
+    'total_fee': 1, # 订单总金额，单位为分
+
+    'product_id': '2116', # 商品ID
+
+    'notify_url': 'http://145657w88r.iok.la/weixin/pay_callback/',
+
+    'trade_type':'JSAPI',
+
+}
+
+wechatpay_qrcode_config = {
+
+    'wechatpay_appid': 'xxxxxxxxxxx',  # 必填,微信分配的公众账号ID
+
+    'wechatpay_key': 'xxxxxxxxxxx',
+
+    'wechatpay_mchid': 'xxxxxxxxxxx',  # 必填,微信支付分配的商户号
+
+    'wechatpay_appsecret': 'xxxxxxxxxxx', # 必填,appid 密钥
+
+}
+
+wxpay = WxPayBasic(conf=wechatpay_qrcode_config)
+
+app_result = wxpay.get_js_api_parameters(**params)
+
+后续处理把app_result传递给微信js客户端，由客户端sdk使用此参数发起请求即可
+..........
+
+
+
+
+# 4支付回调定义 （注意：扫码支付&&app支付，使用的是不同config）#
 # (以django的views为例)
 
     @csrf_exempt
